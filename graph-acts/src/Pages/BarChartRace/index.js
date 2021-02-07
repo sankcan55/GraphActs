@@ -17,6 +17,13 @@ class index extends Component {
     this.setState({ [event.target.name]: event.target.value });
   }
 
+  epocsConvertor = (epocTime) => {
+    var d = new Date(0);
+    d.setUTCSeconds(epocTime);
+    // console.log(d.getUTCFullYear(epocTime))
+    return d.getUTCFullYear(epocTime);
+  };
+
   async handleSubmit(event) {
     event.preventDefault();
     var self = this;
@@ -26,8 +33,14 @@ class index extends Component {
       let response = await fetch(url);
       let response_body = await response.json();
       if (response.ok) {
+        self.state.composed_data[user_id]={}
+        for(var i=0;i<response_body['result'].length;i++){
+          var year=self.epocsConvertor(response_body['result'][i]['ratingUpdateTimeSeconds'])
+          if(!self.state.composed_data[user_id][year])
+            self.state.composed_data[user_id][year]=[]
+          self.state.composed_data[user_id][year].push(response_body['result'][i]['newRating'])
+        }
         var tmp = self.state.composed_data;
-        tmp.push(response_body["result"]);
         self.setState({ composed_data: tmp });
       }
     });

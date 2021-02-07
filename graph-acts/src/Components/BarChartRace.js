@@ -2,13 +2,6 @@ import React, { useRef } from "react";
 import * as d3 from "d3";
 import "./style.css";
 
-// const epocsConvertor = (date) => {
-//   var utcSeconds = date;
-//   var d = new Date(0);
-//   d.setUTCSeconds(utcSeconds);
-//   return d;
-// };
-
 var propData = [];
 var users = [];
 
@@ -37,8 +30,8 @@ function BarChartRace(props) {
     users.add(propData[i][0].handle);
   }
   userArray = [...users];
-  console.log("propData >>>>>>>>> ", propData);
-  console.log("users >>>>>>>>>>> ", userArray);
+  // console.log("propData >>>>>>>>> ", propData);
+  // console.log("users >>>>>>>>>>> ", userArray);
   var myChart;
   if (userArray.length > 0) {
     myChart = new BarChartGenatator("bar-chart-race");
@@ -100,7 +93,7 @@ function generateDataSets() {
         })),
     });
   }
-  console.log("DataSet >>>>>>>>>>> ", dataSet);
+  // console.log("DataSet >>>>>>>>>>> ", dataSet);
   return dataSet;
 }
 
@@ -158,7 +151,7 @@ function BarChartGenatator(chartId, extendedSettings) {
       ({ value: firstValue }, { value: secondValue }) =>
         secondValue - firstValue
     );
-    console.log("dataSetDescendingOrder >>>>>> ", dataSetDescendingOrder);
+    // console.log("dataSetDescendingOrder >>>>>> ", dataSetDescendingOrder);
     chartContainer.select(".current-date").text(currentDate);
 
     xAxisScale.domain([0, dataSetDescendingOrder[0].value]);
