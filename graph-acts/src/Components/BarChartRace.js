@@ -25,13 +25,13 @@ function BarChartRace(props) {
   current_date = useRef();
 
   propData = props.data;
-  users = new Set();
-  for (let i = 0; i < propData.length; i++) {
-    users.add(propData[i][0].handle);
+
+  for(let user in propData){
+    if(!userArray.includes(user)){
+      userArray.push(user);
+    }
   }
-  userArray = [...users];
-  // console.log("propData >>>>>>>>> ", propData);
-  // console.log("users >>>>>>>>>>> ", userArray);
+
   var myChart;
   if (userArray.length > 0) {
     myChart = new BarChartGenatator("bar-chart-race");
@@ -70,26 +70,51 @@ function BarChartRace(props) {
   );
 }
 
+function getMinYear(){
+  var minYear=10000
+  for(let user in propData){
+    for(let year in propData[user]){
+      minYear=Math.min(minYear, year)
+    }
+  }
+  return minYear
+}
+
+function getMaxYear(){
+  var maxYear=0
+  for(let user in propData){
+    for(let year in propData[user]){
+      maxYear=Math.max(maxYear, year)
+    }
+  }
+  return maxYear
+}
+
+function getAvg(arr){
+  var ctr=0;
+  var sum=0;
+  for(var val in arr){
+    sum=sum+arr[val]
+    ctr++;
+  }
+  return sum/ctr;
+}
+
 function generateDataSets() {
   const dataSet = [];
-  const currentYear = +d3.timeFormat("%Y")(new Date());
-  const maxLimitForValue = 4000;
-  const minLimitForValue = 200;
+  // const currentYear = +d3.timeFormat("%Y")(new Date());
+  const minYear = getMinYear()
+  const maxYear = getMaxYear()
   const maximumModelCount = 10;
-  const size = 5;
-  for (let i = 0; i < size; i++) {
+  // const size = 5;
+  for (let i = minYear; i <= maxYear; i++) {
     dataSet.push({
-      date: currentYear - (size - (i + 1)),
+      date: i,
       dataset: userArray
-        .sort(function () {
-          return Math.random() - 0.5;
-        })
         .slice(0, maximumModelCount)
         .map((user) => ({
           name: user,
-          value:
-            Math.random() * (maxLimitForValue - minLimitForValue) +
-            minLimitForValue,
+          value: getAvg(propData[user][i])
         })),
     });
   }
