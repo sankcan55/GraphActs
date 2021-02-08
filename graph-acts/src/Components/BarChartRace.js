@@ -26,8 +26,8 @@ function BarChartRace(props) {
 
   propData = props.data;
 
-  for(let user in propData){
-    if(!userArray.includes(user)){
+  for (let user in propData) {
+    if (!userArray.includes(user)) {
       userArray.push(user);
     }
   }
@@ -70,55 +70,65 @@ function BarChartRace(props) {
   );
 }
 
-function getMinYear(){
-  var minYear=10000
-  for(let user in propData){
-    for(let year in propData[user]){
-      minYear=Math.min(minYear, year)
+function getMinYear() {
+  var minYear = 10000;
+  for (let user in propData) {
+    for (let year in propData[user]) {
+      minYear = Math.min(minYear, year);
     }
   }
-  return minYear
+  return minYear;
 }
 
-function getMaxYear(){
-  var maxYear=0
-  for(let user in propData){
-    for(let year in propData[user]){
-      maxYear=Math.max(maxYear, year)
+function getMaxYear() {
+  var maxYear = 0;
+  for (let user in propData) {
+    for (let year in propData[user]) {
+      maxYear = Math.max(maxYear, year);
     }
   }
-  return maxYear
+  return maxYear;
 }
 
-function getAvg(arr){
-  var ctr=0;
-  var sum=0;
-  for(var val in arr){
-    sum=sum+arr[val]
+const prevRating = [0];
+
+function getAvg(arr, user) {
+  var ctr = 0;
+  var sum = 0;
+  console.log(user);
+  for (var val in arr) {
+    sum = sum + arr[val];
     ctr++;
   }
-  return sum/ctr;
+  sum / ctr
+    ? prevRating.push(sum / ctr)
+    : prevRating.push(prevRating[prevRating.length - 1]);
+  console.log("prevRating >>>>>>>>>>>>> ", prevRating);
+  /**
+   * @ rating of all the users are getting mixed.
+   * once check the log of upper statement: line => 106 for the error **
+   */
+  return sum / ctr ? sum / ctr : prevRating[prevRating.length - 1];
 }
 
 function generateDataSets() {
   const dataSet = [];
   // const currentYear = +d3.timeFormat("%Y")(new Date());
-  const minYear = getMinYear()
-  const maxYear = getMaxYear()
-  const maximumModelCount = 10;
+  const minYear = getMinYear();
+  const maxYear = getMaxYear();
+
   // const size = 5;
   for (let i = minYear; i <= maxYear; i++) {
     dataSet.push({
       date: i,
       dataset: userArray
-        .slice(0, maximumModelCount)
+        .slice(0, Math.min(10, userArray.length))
         .map((user) => ({
           name: user,
-          value: getAvg(propData[user][i])
+          value: getAvg(propData[user][i], user),
         })),
     });
   }
-  // console.log("DataSet >>>>>>>>>>> ", dataSet);
   return dataSet;
 }
 
@@ -176,7 +186,6 @@ function BarChartGenatator(chartId, extendedSettings) {
       ({ value: firstValue }, { value: secondValue }) =>
         secondValue - firstValue
     );
-    // console.log("dataSetDescendingOrder >>>>>> ", dataSetDescendingOrder);
     chartContainer.select(".current-date").text(currentDate);
 
     xAxisScale.domain([0, dataSetDescendingOrder[0].value]);
