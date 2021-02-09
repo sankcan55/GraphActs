@@ -14,6 +14,12 @@ var y_axis;
 var columns;
 var current_date;
 
+function init(){
+  for (let user in propData) {
+      prevRating[user]=[0]
+  }
+}
+
 function BarChartRace(props) {
   bar_chart_race = useRef();
   chart_container = useRef();
@@ -28,7 +34,6 @@ function BarChartRace(props) {
   for (let user in propData) {
     if (!userArray.includes(user)) {
       userArray.push(user);
-      prevRating[user]=[0]
     }
   }
 
@@ -99,13 +104,12 @@ function getAvg(year, user) {
     sum = sum + arr[val];
     ctr++;
   }
-  if(sum/ctr){
+  if(ctr!==0){
     avg=sum/ctr
     prevRating[user].push(avg)
   }
   else{
     avg=prevRating[user][prevRating[user].length - 1]
-    prevRating[user].push(avg)
   }
   return avg
 }
@@ -114,7 +118,7 @@ function generateDataSets() {
   const dataSet = [];
   const minYear = getMinYear();
   const maxYear = getMaxYear();
-
+  init()
   for (let year = minYear; year <= maxYear; year++) {
     dataSet.push({
       date: year,
