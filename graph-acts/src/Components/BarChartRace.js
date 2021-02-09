@@ -3,9 +3,8 @@ import * as d3 from "d3";
 import "./style.css";
 
 var propData = [];
-var users = [];
-
 var userArray = [];
+var prevRating = {};
 
 var bar_chart_race;
 var chart_container;
@@ -29,6 +28,7 @@ function BarChartRace(props) {
   for (let user in propData) {
     if (!userArray.includes(user)) {
       userArray.push(user);
+      prevRating[user]=[0]
     }
   }
 
@@ -90,42 +90,39 @@ function getMaxYear() {
   return maxYear;
 }
 
-const prevRating = [0];
-
-function getAvg(arr, user) {
+function getAvg(year, user) {
   var ctr = 0;
   var sum = 0;
-  console.log(user);
+  var avg = 0;
+  var arr=propData[user][year]
   for (var val in arr) {
     sum = sum + arr[val];
     ctr++;
   }
-  sum / ctr
-    ? prevRating.push(sum / ctr)
-    : prevRating.push(prevRating[prevRating.length - 1]);
-  console.log("prevRating >>>>>>>>>>>>> ", prevRating);
-  /**
-   * @ rating of all the users are getting mixed.
-   * once check the log of upper statement: line => 106 for the error **
-   */
-  return sum / ctr ? sum / ctr : prevRating[prevRating.length - 1];
+  if(sum/ctr){
+    avg=sum/ctr
+    prevRating[user].push(avg)
+  }
+  else{
+    avg=prevRating[user][prevRating[user].length - 1]
+    prevRating[user].push(avg)
+  }
+  return avg
 }
 
 function generateDataSets() {
   const dataSet = [];
-  // const currentYear = +d3.timeFormat("%Y")(new Date());
   const minYear = getMinYear();
   const maxYear = getMaxYear();
 
-  // const size = 5;
-  for (let i = minYear; i <= maxYear; i++) {
+  for (let year = minYear; year <= maxYear; year++) {
     dataSet.push({
-      date: i,
+      date: year,
       dataset: userArray
         .slice(0, Math.min(10, userArray.length))
         .map((user) => ({
           name: user,
-          value: getAvg(propData[user][i], user),
+          value: getAvg(year, user),
         })),
     });
   }
